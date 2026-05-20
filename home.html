@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="home.css" />
+    <title>Input sederhanat</title>
+  </head>
+  <body>
+    <div class="pengeluaran">
+      <h2>Pengeluaran</h2>
+      <div id="pengeluaranList"></div>
+      <button onclick="tambahPengeluaran()">+ Tambah</button>
+
+      <h3>Total: <span id="totalPengeluaran">0</span></h3>
+    </div>
+
+    <div class="laporan-harian">
+      <h2>Data hari Sebelumnya</h2>
+      <h2>Input Harian</h2>
+      <div class="yesterday-input">
+        <div class="yesterday-input-group">
+          <label>Total Sales Bulanan (sebelumnya)</label>
+          <input id="totalSalesLama" placeholder="0" type="text" class="rupiah" oninput="formatRupiahInput(this)"/>
+        </div>
+
+        <div class="yesterday-input-group">
+          <label>Total CU Bulanan (sebelumnya)</label>
+          <input id="totalCULama" placeholder="0" type="text" class="rupiah" oninput="formatRupiahInput(this)"/>
+        </div>
+      </div>
+
+      <div class="today-input">
+        <div class="yesterday-input-group">
+          <label>Sales TOTAL Hari Ini</label>
+          <input id="salesHarian" placeholder="0" type="text" class="rupiah" oninput="formatRupiahInput(this)"/>
+        </div>
+
+        <div class="yesterday-input-group">
+          <label>CU TOTAL Hari Ini</label>
+          <input id="cuHarian" placeholder="0" type="text" class="rupiah" oninput="formatRupiahInput(this)"/>
+        </div>
+      </div>
+    </div>
+
+    <h2>Input E-Commerce</h2>
+    <div class="E-commerce">
+      <div class="input-group shopeefood">
+        <label for="sf1">Shopeefood Shift 1</label>
+        <input id="sf1" placeholder="0" type="text" class="rupiah" oninput="formatRupiahInput(this)"/>
+
+        <label for="sf2">Shopeefood Shift 2</label>
+        <input id="sf2" placeholder="0" type="text" class="rupiah" oninput="formatRupiahInput(this)"/>
+      </div>
+
+      <div class="input-group gofood">
+        <label for="gf1">GoFood Shift 1</label>
+        <input id="gf1" placeholder="0" type="text" class="rupiah" oninput="formatRupiahInput(this)"/>
+
+        <label for="gf2">GoFood Shift 2</label>
+        <input id="gf2" placeholder="0" type="text" class="rupiah" oninput="formatRupiahInput(this)"/>
+      </div>
+
+      <div class="input-group grabfood-color">
+        <label>Grab Shift 1</label>
+        <input id="gr1" placeholder="0" type="text" class="rupiah" oninput="formatRupiahInput(this)"/>
+
+        <label>Grab Shift 2</label>
+        <input id="gr2" placeholder="0" type="text" class="rupiah" oninput="formatRupiahInput(this)"/>
+      </div>
+
+      <div class="input-group qris-color">
+        <label>Qris shift 1</label>
+        <input id="qris1" placeholder="0" type="text" class="rupiah" oninput="formatRupiahInput(this)"/>
+
+        <label>Qris shift 2</label>
+        <input id="qris2" placeholder="0" type="text" class="rupiah" oninput="formatRupiahInput(this)"/>
+      </div>
+
+      <div class="input-group tiktok-color">
+        <label>Tiktok shift 1</label>
+        <input id="Tt1" placeholder="0" type="text" class="rupiah" oninput="formatRupiahInput(this)"/>
+
+        <label>Tiktok shift 2</label>
+        <input id="Tt2" placeholder="0" type="text" class="rupiah" oninput="formatRupiahInput(this)"/>
+      </div>
+
+      <div class="input-group qpon-color">
+        <label>Qpon shift 1</label>
+        <input id="qpon1" placeholder="0" type="text" class="rupiah" oninput="formatRupiahInput(this)"/>
+
+        <label>Qpon shift 2</label>
+        <input id="qpon2" placeholder="0" type="text" class="rupiah" oninput="formatRupiahInput(this)"/>
+      </div>
+    </div>
+
+    <button onclick="generate()">Generate Laporan</button>
+
+    <h2>Hasil</h2>
+    <textarea id="result"></textarea>
+
+    <button onclick="copyText()">Copy</button>
+  </body>
+
+  <script src="home.js"></script>
+</html>
