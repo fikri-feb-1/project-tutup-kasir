@@ -45,7 +45,7 @@ function getActiveKaryawan() {
   return aktif;
 }
 
-// ================= PENGELUARAN MOBILE =================
+// ================= PENGELUARAN MOBILE (DIPERBAIKI TOTAL) =================
 function tambahPengeluaran() {
   const container = document.getElementById("pengeluaranList");
 
@@ -53,7 +53,7 @@ function tambahPengeluaran() {
   div.classList.add("pengeluaran-item");
 
   div.innerHTML = `
-    <select onchange="toggleCustom(this); toggleMode(this)">
+    <select onchange="toggleModeLainLain(this)">
       <option value="Galon" data-type="pcs">Galon</option>
       <option value="Rinso" data-type="pcs">Rinso</option>
       <option value="Gas LPG" data-type="pcs">Gas LPG</option>
@@ -61,15 +61,22 @@ function tambahPengeluaran() {
       <option value="Listrik" data-type="nonpcs">Listrik</option>
       <option value="Air PDAM" data-type="nonpcs">Air PDAM</option>
       <option value="Wifi" data-type="nonpcs">Wifi</option>
-      <option value="Lain-lain" data-type="pcs">Lain-lain</option>
+      <option value="Lain-lain" data-type="custom">Lain-lain</option>
     </select>
 
-    <input type="text" class="custom" placeholder="Nama barang (opsional)" style="display:none">
+    <!-- Input khusus untuk mode Lain-lain (custom nama + harga) -->
+    <div class="lainlain-group" style="display:none">
+      <input type="text" class="custom-nama" placeholder="Nama pengeluaran (contoh: General Cleaning)">
+      <input type="text" class="custom-harga" placeholder="Harga" oninput="formatRupiahInput(this); hitungTotal()">
+    </div>
 
-    <div class="item-row">
-      <input type="text" class="jumlah" value="1" placeholder="Jml" oninput="hitungTotal()" style="text-align:center">
-      <input type="text" class="harga" placeholder="Harga" oninput="formatRupiahInput(this); hitungTotal()">
-      <button type="button" class="delete-item" onclick="hapusPengeluaran(this)">✕</button>
+    <!-- Input untuk mode normal (barang dengan jumlah) -->
+    <div class="normal-group">
+      <div class="item-row">
+        <input type="text" class="jumlah" value="1" placeholder="Jml" oninput="hitungTotal()" style="text-align:center">
+        <input type="text" class="harga" placeholder="Harga" oninput="formatRupiahInput(this); hitungTotal()">
+        <button type="button" class="delete-item" onclick="hapusPengeluaran(this)">✕</button>
+      </div>
     </div>
   `;
 
@@ -82,51 +89,76 @@ function hapusPengeluaran(btn) {
   hitungTotal();
 }
 
-function toggleCustom(select) {
+function toggleModeLainLain(select) {
   const row = select.closest(".pengeluaran-item");
-  const custom = row.querySelector(".custom");
-  const jumlahRow = row.querySelector(".item-row");
+  const lainlainGroup = row.querySelector(".lainlain-group");
+  const normalGroup = row.querySelector(".normal-group");
+  const selectOption = select.options[select.selectedIndex];
+  const type = selectOption.dataset.type;
+  const isLainLain = select.value.toLowerCase() === "lain-lain";
 
-  const isOther = select.value.toLowerCase() === "lain-lain";
-  custom.style.display = isOther ? "block" : "none";
+  // Tampilkan/sembunyikan group berdasarkan pilihan
+  if (isLainLain) {
+    lainlainGroup.style.display = "block";
+    normalGroup.style.display = "none";
+    
+    // Bersihkan input normal
+    const jumlahInput = normalGroup.querySelector(".jumlah");
+    const hargaInput = normalGroup.querySelector(".harga");
+    if (jumlahInput) jumlahInput.value = "1";
+    if (hargaInput) hargaInput.value = "";
+  } else {
+    lainlainGroup.style.display = "none";
+    normalGroup.style.display = "block";
+    
+    // Bersihkan input custom
+    const customNama = lainlainGroup.querySelector(".custom-nama");
+    const customHarga = lainlainGroup.querySelector(".custom-harga");
+    if (customNama) customNama.value = "";
+    if (customHarga) customHarga.value = "";
+  }
   
-  if (isOther) {
-    if (jumlahRow) jumlahRow.style.display = "none";
-  } else {
-    if (jumlahRow) jumlahRow.style.display = "flex";
+  // Untuk tipe nonpcs (Listrik, Air PDAM, Wifi) disable jumlah
+  if (type === "nonpcs" && !isLainLain) {
+    const jumlahInput = normalGroup.querySelector(".jumlah");
+    if (jumlahInput) {
+      jumlahInput.value = "1";
+      jumlahInput.disabled = true;
+    }
+  } else if (type === "pcs" && !isLainLain) {
+    const jumlahInput = normalGroup.querySelector(".jumlah");
+    if (jumlahInput) {
+      jumlahInput.disabled = false;
+    }
   }
-}
-
-function toggleMode(select) {
-  const row = select.closest(".pengeluaran-item");
-  const jumlah = row.querySelector(".jumlah");
-  const type = select.options[select.selectedIndex].dataset.type;
-
-  if (type === "nonpcs") {
-    jumlah.value = "1";
-    jumlah.disabled = true;
-  } else {
-    jumlah.disabled = false;
-  }
+  
   hitungTotal();
 }
 
 function hitungTotal() {
   let total = 0;
+  
   document.querySelectorAll("#pengeluaranList .pengeluaran-item").forEach((row) => {
     const select = row.querySelector("select");
-    const hargaInput = row.querySelector(".harga");
+    const isLainLain = select?.value.toLowerCase() === "lain-lain";
     
-    if (!hargaInput) return;
-    let h = parseInt(hargaInput.value.replace(/\./g, "")) || 0;
-    const type = select?.options[select.selectedIndex]?.dataset.type;
-
-    if (type === "nonpcs") {
-      total += h;
+    if (isLainLain) {
+      // Mode Lain-lain: ambil dari custom-harga
+      const customHarga = row.querySelector(".custom-harga");
+      if (customHarga) {
+        let h = parseInt(customHarga.value.replace(/\./g, "")) || 0;
+        total += h;
+      }
     } else {
-      total += h;
+      // Mode normal: ambil dari input harga
+      const hargaInput = row.querySelector(".normal-group .harga");
+      if (hargaInput) {
+        let h = parseInt(hargaInput.value.replace(/\./g, "")) || 0;
+        total += h;
+      }
     }
   });
+  
   document.getElementById("totalPengeluaran").innerText = format(total);
 }
 
@@ -136,26 +168,44 @@ function getPengeluaranText() {
 
   document.querySelectorAll("#pengeluaranList .pengeluaran-item").forEach((row) => {
     const select = row.querySelector("select");
-    const custom = row.querySelector(".custom")?.value || "";
-    const jumlah = row.querySelector(".jumlah");
-    const harga = row.querySelector(".harga");
-
-    if (!harga) return;
+    const isLainLain = select?.value.toLowerCase() === "lain-lain";
     const type = select?.options[select.selectedIndex]?.dataset.type;
-    const j = parseInt(jumlah?.value) || 0;
-    let h = parseInt(harga.value.replace(/\./g, "")) || 0;
-
-    let nama = select.value === "Lain-lain" && custom ? custom : select.value;
-
-    if (type === "nonpcs") {
-      if (h > 0) {
+    
+    if (isLainLain) {
+      // Mode Lain-lain: ambil custom nama dan harga
+      const customNama = row.querySelector(".custom-nama")?.value.trim();
+      const customHarga = row.querySelector(".custom-harga");
+      let h = parseInt(customHarga?.value.replace(/\./g, "")) || 0;
+      
+      if (h > 0 && customNama && customNama !== "") {
         total += h;
-        text += ` ${nama} ${format(h)}\n`;
+        text += ` ${customNama} ${format(h)}\n`;
+      } else if (h > 0 && (!customNama || customNama === "")) {
+        total += h;
+        text += ` Lain-lain ${format(h)}\n`;
       }
     } else {
-      if (h > 0) {
-        total += h;
-        text += ` ${nama} ${j} pcs ${format(h)}\n`;
+      // Mode normal
+      const nama = select?.value || "";
+      const jumlah = row.querySelector(".normal-group .jumlah");
+      const harga = row.querySelector(".normal-group .harga");
+      
+      let j = parseInt(jumlah?.value) || 0;
+      let h = parseInt(harga?.value.replace(/\./g, "")) || 0;
+      
+      if (h === 0) return;
+      total += h;
+      
+      if (type === "nonpcs") {
+        // Listrik, Air PDAM, Wifi: tanpa pcs
+        text += ` ${nama} ${format(h)}\n`;
+      } else {
+        // Barang dengan pcs
+        if (j > 0) {
+          text += ` ${nama} ${j} pcs ${format(h)}\n`;
+        } else {
+          text += ` ${nama} ${format(h)}\n`;
+        }
       }
     }
   });
@@ -253,7 +303,7 @@ ${timText}
   document.getElementById("result").value = laporan;
 }
 
-// ================= COPY LAPORAN (ENHANCED FOR MOBILE) =================
+// ================= COPY LAPORAN =================
 async function copyText() {
   const textarea = document.getElementById("result");
   const laporanText = textarea.value;
@@ -263,13 +313,10 @@ async function copyText() {
     return;
   }
   
-  // Method modern pakai Clipboard API
   if (navigator.clipboard && window.isSecureContext) {
     try {
       await navigator.clipboard.writeText(laporanText);
       showToast("✅ Laporan berhasil disalin ke clipboard!", "success");
-      
-      // Beri efek visual pada textarea
       textarea.style.backgroundColor = "#e6f7e6";
       setTimeout(() => {
         textarea.style.backgroundColor = "#fefce8";
@@ -279,19 +326,18 @@ async function copyText() {
       fallbackCopy(textarea);
     }
   } else {
-    // Fallback untuk browser lama
     fallbackCopy(textarea);
   }
 }
 
 function fallbackCopy(textarea) {
   textarea.select();
-  textarea.setSelectionRange(0, 99999); // Untuk mobile
+  textarea.setSelectionRange(0, 99999);
   
   try {
     const success = document.execCommand("copy");
     if (success) {
-      showToast("✅ Laporan disalin (mode fallback)!", "success");
+      showToast("✅ Laporan disalin!", "success");
     } else {
       showToast("❌ Gagal menyalin, silakan copy manual", "error");
     }
@@ -299,13 +345,10 @@ function fallbackCopy(textarea) {
     showToast("❌ Gagal menyalin: " + err.message, "error");
   }
   
-  // Deselect teks
   textarea.blur();
 }
 
-// Toast notification yang cantik untuk mobile
 function showToast(message, type = "success") {
-  // Hapus toast lama jika ada
   const existingToast = document.querySelector(".toast-notification");
   if (existingToast) existingToast.remove();
   
@@ -343,7 +386,6 @@ function showToast(message, type = "success") {
   }, 2500);
 }
 
-// Tambahkan CSS keyframes untuk toast
 const style = document.createElement("style");
 style.textContent = `
   @keyframes slideUp {
@@ -358,6 +400,7 @@ style.textContent = `
   }
 `;
 document.head.appendChild(style);
+
 // ================= INIT =================
 window.onload = () => {
   renderKaryawanChecklist();

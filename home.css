@@ -11,17 +11,15 @@ body {
   background: #f5f7fb;
   padding: 12px;
   color: #1e293b;
-  font-size: 16px; /* Base font untuk mobile, tidak terlalu kecil */
+  font-size: 16px;
 }
 
-/* Container menggunakan lebar penuh */
 .container {
   max-width: 600px;
   margin: 0 auto;
   width: 100%;
 }
 
-/* CARD untuk mobile - sentuhan nyaman */
 .card {
   background: white;
   border-radius: 20px;
@@ -31,7 +29,6 @@ body {
   transition: all 0.2s;
 }
 
-/* Typography mobile */
 h2 {
   font-size: 1.3rem;
   font-weight: 600;
@@ -47,10 +44,9 @@ h3 {
   font-weight: 500;
 }
 
-/* INPUT & SELECT - DIPERBESAR UNTUK JARI */
 input, select, textarea {
   font-family: inherit;
-  font-size: 16px; /* Mencegah zoom otomatis di iOS */
+  font-size: 16px;
   padding: 14px 16px;
   border: 1.5px solid #e2e8f0;
   border-radius: 14px;
@@ -65,7 +61,6 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
 }
 
-/* Label mobile */
 label {
   font-size: 0.8rem;
   font-weight: 600;
@@ -75,7 +70,6 @@ label {
   letter-spacing: -0.2px;
 }
 
-/* BUTTON - BESAR, MUDAH DI KLIK */
 button {
   font-family: inherit;
   font-weight: 600;
@@ -96,7 +90,7 @@ button:active {
   background: #0f172a;
 }
 
-/* ================= PENGELUARAN MOBILE ================= */
+
 .pengeluaran-header {
   display: flex;
   justify-content: space-between;
@@ -127,7 +121,6 @@ button:active {
   overflow-y: auto;
 }
 
-/* Item pengeluaran - stack vertikal di HP */
 .pengeluaran-item {
   background: #f8fafc;
   border-radius: 18px;
@@ -138,14 +131,12 @@ button:active {
   border: 1px solid #eef2ff;
 }
 
-/* Di HP, grid berubah jadi vertical */
 .pengeluaran-item select,
 .pengeluaran-item input {
   width: 100%;
   margin: 0;
 }
 
-/* Baris untuk jumlah + harga + delete (horizontal di HP) */
 .item-row {
   display: flex;
   gap: 10px;
@@ -175,7 +166,6 @@ button:active {
   transform: scale(0.95);
 }
 
-/* Total pengeluaran */
 .total-pengeluaran {
   background: #f1f5f9;
   border-radius: 16px;
@@ -183,6 +173,31 @@ button:active {
   text-align: center;
   font-size: 1rem;
   font-weight: 600;
+}
+
+/* Style untuk group Lain-lain */
+.lainlain-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lainlain-group input {
+  width: 100%;
+}
+
+.lainlain-group .custom-nama {
+  background: #fff9e6;
+  border-color: #fbbf24;
+}
+
+.lainlain-group .custom-nama:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245,158,11,0.1);
+}
+
+.lainlain-group .custom-harga {
+  background: white;
 }
 
 #totalPengeluaran {
@@ -195,7 +210,6 @@ button:active {
   display: inline-block;
 }
 
-/* ================= LAPORAN HARIAN (VERTICAL DI HP) ================= */
 .laporan-harian {
   display: flex;
   flex-direction: column;
@@ -217,7 +231,6 @@ button:active {
   margin-bottom: 0;
 }
 
-/* ================= E-COMMERCE MOBILE ================= */
 .E-commerce {
   display: flex;
   flex-direction: column;
@@ -247,7 +260,6 @@ button:active {
   margin-bottom: 0;
 }
 
-/* Warna accent di kiri (tetap muncul di HP) */
 .shopeefood { border-left: 4px solid #ee4d2d; }
 .gofood { border-left: 4px solid #2ab140; }
 .grabfood-color { border-left: 4px solid #00b14f; }
@@ -255,7 +267,6 @@ button:active {
 .tiktok-color { border-left: 4px solid #010101; }
 .qpon-color { border-left: 4px solid #ff9900; }
 
-/* ================= KARYAWAN (CHIP HORIZONTAL SCROLL) ================= */
 .karyawan-container {
   display: flex;
   flex-wrap: wrap;
@@ -293,84 +304,21 @@ button:active {
   padding-top: 8px;
 }
 
-/* ================= TEXTAREA HASIL ================= */
 textarea {
   width: 100%;
   border-radius: 20px;
   padding: 16px;
   font-family: 'Menlo', 'Courier New', monospace;
-  font-size: 13px;
+  font-size: 14px;
   background: #fefce8;
   border: 1.5px solid #e2e8f0;
   margin: 12px 0;
   resize: vertical;
   min-height: 320px;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.action-buttons button {
-  flex: 1;
-}
-
-.copy-btn {
-  background: #10b981;
-}
-
-.generate-btn {
-  background: #1e293b;
-  margin-bottom: 10px;
-}
-
-/* Tombol Copy - lebih menonjol karena ini fitur INTI */
-.copy-btn {
-  background: #10b981;
-  position: relative;
-  overflow: hidden;
-}
-
-.copy-btn:active {
-  background: #059669;
-  transform: scale(0.97);
-}
-
-/* Efek ripple untuk feedback copy */
-.copy-btn.copied {
-  background: #059669;
-}
-
-.copy-btn.copied::after {
-  content: "✓ Tersalin!";
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: #10b981;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: fadeOut 1s forwards;
-}
-
-@keyframes fadeOut {
-  0% { opacity: 1; }
-  70% { opacity: 1; }
-  100% { opacity: 0; visibility: hidden; }
-}
-
-/* Area hasil laporan - penting untuk copy */
-textarea {
-  font-size: 14px;
   line-height: 1.5;
-  user-select: all; /* Memudahkan select manual jika perlu */
+  user-select: all;
 }
 
-/* Tombol aksi berjajar rapi di mobile */
 .action-buttons {
   display: flex;
   gap: 12px;
@@ -383,23 +331,30 @@ textarea {
   padding: 14px 12px;
 }
 
-/* Tombol generate tetap ada */
+.copy-btn {
+  background: #10b981;
+  position: relative;
+  overflow: hidden;
+}
+
+.copy-btn:active {
+  background: #059669;
+  transform: scale(0.97);
+}
+
 .generate-btn {
   background: #1e293b;
   margin-bottom: 8px;
 }
 
-/* SCROLLBAR HALUS */
 #pengeluaranList::-webkit-scrollbar {
   width: 4px;
 }
 
-/* SPACING UNTUK TOUCH */
 button, select, input, .karyawan-item {
   touch-action: manipulation;
 }
 
-/* FIX untuk input number */
 input[type="number"] {
   -moz-appearance: textfield;
 }
@@ -407,4 +362,16 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   opacity: 0.5;
   height: 30px;
+}
+
+/* Style khusus untuk input custom (Lain-lain) */
+.pengeluaran-item .custom {
+  background: #fff9e6;
+  border-color: #fbbf24;
+  margin-bottom: 0;
+}
+
+.pengeluaran-item .custom:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245,158,11,0.1);
 }
