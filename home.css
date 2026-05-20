@@ -1,123 +1,410 @@
-body {
-  font-family: Arial;
-  padding: 20px;
-  background: #f5f5f5;
-}
-
-h2 {
-  margin-top: 20px;
-}
-
-input {
+/* RESET & BASE - MOBILE FIRST */
+* {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
-label {
-  font-size: 14px;
-  line-height: 1.2;
-  word-break: break-word;
-
-  min-height: 38px;
-  display: flex;
-  align-items: flex-end;
-}
-
-input {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 8px;
-  font-size: 16px;
-}
-
-button {
-  width: 100%;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: #f5f7fb;
   padding: 12px;
-  margin-top: 10px;
-  background: black;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  color: #1e293b;
+  font-size: 16px; /* Base font untuk mobile, tidak terlalu kecil */
 }
 
+/* Container menggunakan lebar penuh */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* CARD untuk mobile - sentuhan nyaman */
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 18px 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: all 0.2s;
+}
+
+/* Typography mobile */
+h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+h3 {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* INPUT & SELECT - DIPERBESAR UNTUK JARI */
+input, select, textarea {
+  font-family: inherit;
+  font-size: 16px; /* Mencegah zoom otomatis di iOS */
+  padding: 14px 16px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  background: white;
+  width: 100%;
+  transition: all 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+}
+
+/* Label mobile */
+label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 6px;
+  display: block;
+  letter-spacing: -0.2px;
+}
+
+/* BUTTON - BESAR, MUDAH DI KLIK */
+button {
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 44px;
+  background: #1e293b;
+  color: white;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s;
+  min-height: 52px;
+}
+
+button:active {
+  transform: scale(0.97);
+  background: #0f172a;
+}
+
+/* ================= PENGELUARAN MOBILE ================= */
+.pengeluaran-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pengeluaran-header h2 {
+  margin-bottom: 0;
+}
+
+.tambah-btn {
+  background: #3b82f6;
+  width: auto;
+  padding: 10px 20px;
+  font-size: 14px;
+  min-height: 44px;
+}
+
+#pengeluaranList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 18px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* Item pengeluaran - stack vertikal di HP */
+.pengeluaran-item {
+  background: #f8fafc;
+  border-radius: 18px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid #eef2ff;
+}
+
+/* Di HP, grid berubah jadi vertical */
+.pengeluaran-item select,
+.pengeluaran-item input {
+  width: 100%;
+  margin: 0;
+}
+
+/* Baris untuk jumlah + harga + delete (horizontal di HP) */
+.item-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.item-row .jumlah,
+.item-row .harga {
+  flex: 1;
+}
+
+.delete-item {
+  background: #fee2e2;
+  color: #b91c1c;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border-radius: 40px;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: unset;
+}
+
+.delete-item:active {
+  transform: scale(0.95);
+}
+
+/* Total pengeluaran */
+.total-pengeluaran {
+  background: #f1f5f9;
+  border-radius: 16px;
+  padding: 14px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+#totalPengeluaran {
+  font-weight: 800;
+  color: #0f3b5c;
+  background: white;
+  padding: 4px 14px;
+  border-radius: 40px;
+  margin-left: 8px;
+  display: inline-block;
+}
+
+/* ================= LAPORAN HARIAN (VERTICAL DI HP) ================= */
+.laporan-harian {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.yesterday-input, .today-input {
+  background: #fafcff;
+  border-radius: 18px;
+  padding: 14px;
+  border: 1px solid #eef2ff;
+}
+
+.yesterday-input-group {
+  margin-bottom: 14px;
+}
+
+.yesterday-input-group:last-child {
+  margin-bottom: 0;
+}
+
+/* ================= E-COMMERCE MOBILE ================= */
+.E-commerce {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.input-group {
+  background: #fafcff;
+  border-radius: 18px;
+  padding: 14px;
+  border: 1px solid #eef2ff;
+}
+
+.input-group label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.input-group input {
+  margin-bottom: 10px;
+}
+
+.input-group input:last-child {
+  margin-bottom: 0;
+}
+
+/* Warna accent di kiri (tetap muncul di HP) */
+.shopeefood { border-left: 4px solid #ee4d2d; }
+.gofood { border-left: 4px solid #2ab140; }
+.grabfood-color { border-left: 4px solid #00b14f; }
+.qris-color { border-left: 4px solid #2c3e50; }
+.tiktok-color { border-left: 4px solid #010101; }
+.qpon-color { border-left: 4px solid #ff9900; }
+
+/* ================= KARYAWAN (CHIP HORIZONTAL SCROLL) ================= */
+.karyawan-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.karyawan-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  padding: 10px 18px;
+  border-radius: 44px;
+  border: 1.5px solid #e2e8f0;
+}
+
+.karyawan-item input {
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: #3b82f6;
+}
+
+.karyawan-item label {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.info-karyawan {
+  font-size: 0.7rem;
+  color: #64748b;
+  text-align: center;
+  padding-top: 8px;
+}
+
+/* ================= TEXTAREA HASIL ================= */
 textarea {
   width: 100%;
-  height: 250px;
-  margin-top: 10px;
-  padding: 10px;
+  border-radius: 20px;
+  padding: 16px;
+  font-family: 'Menlo', 'Courier New', monospace;
+  font-size: 13px;
+  background: #fefce8;
+  border: 1.5px solid #e2e8f0;
+  margin: 12px 0;
+  resize: vertical;
+  min-height: 320px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.action-buttons button {
+  flex: 1;
+}
+
+.copy-btn {
+  background: #10b981;
+}
+
+.generate-btn {
+  background: #1e293b;
+  margin-bottom: 10px;
+}
+
+/* Tombol Copy - lebih menonjol karena ini fitur INTI */
+.copy-btn {
+  background: #10b981;
+  position: relative;
+  overflow: hidden;
+}
+
+.copy-btn:active {
+  background: #059669;
+  transform: scale(0.97);
+}
+
+/* Efek ripple untuk feedback copy */
+.copy-btn.copied {
+  background: #059669;
+}
+
+.copy-btn.copied::after {
+  content: "✓ Tersalin!";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeOut 1s forwards;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+/* Area hasil laporan - penting untuk copy */
+textarea {
   font-size: 14px;
+  line-height: 1.5;
+  user-select: all; /* Memudahkan select manual jika perlu */
 }
 
-.yesterday-input,
-.today-input,
-.input-group {
-  justify-content: space-between;
+/* Tombol aksi berjajar rapi di mobile */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
 }
 
-.jumlah {
-  text-align: center;
+.action-buttons button {
+  flex: 1;
+  font-size: 16px;
+  padding: 14px 12px;
 }
 
-.rupiah {
-  text-align: right;
-}
-
-.row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 6px;
+/* Tombol generate tetap ada */
+.generate-btn {
+  background: #1e293b;
   margin-bottom: 8px;
 }
 
-.row input, .row select {
-  padding: 6px;
+/* SCROLLBAR HALUS */
+#pengeluaranList::-webkit-scrollbar {
+  width: 4px;
 }
 
-.laporan-harian {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+/* SPACING UNTUK TOUCH */
+button, select, input, .karyawan-item {
+  touch-action: manipulation;
 }
 
-.yesterday-input {
-  background: white;
-  padding: 10px;
-  border-radius: 8px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-
-  min-height: 140px;
+/* FIX untuk input number */
+input[type="number"] {
+  -moz-appearance: textfield;
 }
-
-.today-input {
-  background: white;
-  padding: 10px;
-  border-radius: 8px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-
-  min-height: 140px;
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 0.5;
+  height: 30px;
 }
-
-.E-commerce {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.input-group {
-  background: white;
-  padding: 10px;
-  border-radius: 8px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-
-  min-height: 140px;
-}
-

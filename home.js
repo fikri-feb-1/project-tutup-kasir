@@ -1,41 +1,56 @@
-function format(num) {
-  return num.toLocaleString("id-ID");
-}
+// ================= UTILITY =================
 function format(num) {
   return num.toLocaleString("id-ID");
 }
 
 function getValue(id) {
-  return parseInt(document.getElementById(id).value) || 0;
+  let el = document.getElementById(id);
+  if (!el) return 0;
+  let raw = el.value.replace(/\./g, "").replace(/\D/g, "");
+  return parseInt(raw) || 0;
 }
 
 function formatRupiahInput(el) {
-  let value = el.value.replace(/\D/g, ""); // hapus selain angka
-
+  let value = el.value.replace(/\D/g, "");
   if (!value) {
     el.value = "";
     return;
   }
-
   el.value = new Intl.NumberFormat("id-ID").format(value);
 }
 
-function getJenis(selectId, customId) {
-  let jenis = document.getElementById(selectId).value;
-  let custom = document.getElementById(customId).value;
+// ================= DATA KARYAWAN =================
+const DAFTAR_KARYAWAN = ["Esa", "Fikri", "Rifki", "Gata", "Iqbal"];
 
-  if (jenis === "Lainnya" && custom !== "") {
-    return custom;
-  }
+function renderKaryawanChecklist() {
+  const container = document.getElementById("karyawanContainer");
+  if (!container) return;
 
-  return jenis;
+  container.innerHTML = DAFTAR_KARYAWAN.map((nama, index) => `
+    <div class="karyawan-item">
+      <input type="checkbox" id="karyawan_${index}" value="${nama}" checked>
+      <label for="karyawan_${index}">${nama}</label>
+    </div>
+  `).join("");
 }
 
+function getActiveKaryawan() {
+  const aktif = [];
+  DAFTAR_KARYAWAN.forEach((_, index) => {
+    const cb = document.getElementById(`karyawan_${index}`);
+    if (cb && cb.checked) {
+      aktif.push(cb.value);
+    }
+  });
+  return aktif;
+}
+
+// ================= PENGELUARAN MOBILE =================
 function tambahPengeluaran() {
   const container = document.getElementById("pengeluaranList");
 
   const div = document.createElement("div");
-  div.classList.add("row");
+  div.classList.add("pengeluaran-item");
 
   div.innerHTML = `
     <select onchange="toggleCustom(this); toggleMode(this)">
@@ -43,80 +58,75 @@ function tambahPengeluaran() {
       <option value="Rinso" data-type="pcs">Rinso</option>
       <option value="Gas LPG" data-type="pcs">Gas LPG</option>
       <option value="Tisu" data-type="pcs">Tisu</option>
-
       <option value="Listrik" data-type="nonpcs">Listrik</option>
       <option value="Air PDAM" data-type="nonpcs">Air PDAM</option>
       <option value="Wifi" data-type="nonpcs">Wifi</option>
-      
       <option value="Lain-lain" data-type="pcs">Lain-lain</option>
     </select>
 
-    <input type="text" class="custom" placeholder="Nama barang" style="display:none">
+    <input type="text" class="custom" placeholder="Nama barang (opsional)" style="display:none">
 
-    <input type="number" class="jumlah" min="1" value="1" oninput="hitungTotal()">
-    <input type="number" class="harga" placeholder="Harga" oninput="formatRupiahInput(this); hitungTotal()">
+    <div class="item-row">
+      <input type="text" class="jumlah" value="1" placeholder="Jml" oninput="hitungTotal()" style="text-align:center">
+      <input type="text" class="harga" placeholder="Harga" oninput="formatRupiahInput(this); hitungTotal()">
+      <button type="button" class="delete-item" onclick="hapusPengeluaran(this)">✕</button>
+    </div>
   `;
 
   container.appendChild(div);
 }
 
+function hapusPengeluaran(btn) {
+  const item = btn.closest(".pengeluaran-item");
+  if (item) item.remove();
+  hitungTotal();
+}
+
 function toggleCustom(select) {
-  const row = select.parentElement;
+  const row = select.closest(".pengeluaran-item");
   const custom = row.querySelector(".custom");
-  const number = row.querySelector(".jumlah");
+  const jumlahRow = row.querySelector(".item-row");
 
   const isOther = select.value.toLowerCase() === "lain-lain";
-
   custom.style.display = isOther ? "block" : "none";
-  number.style.display = isOther ? "none" : "block";
+  
+  if (isOther) {
+    if (jumlahRow) jumlahRow.style.display = "none";
+  } else {
+    if (jumlahRow) jumlahRow.style.display = "flex";
+  }
 }
 
 function toggleMode(select) {
-  const row = select.parentElement;
+  const row = select.closest(".pengeluaran-item");
   const jumlah = row.querySelector(".jumlah");
-
   const type = select.options[select.selectedIndex].dataset.type;
 
   if (type === "nonpcs") {
-    jumlah.value = 1;
+    jumlah.value = "1";
     jumlah.disabled = true;
   } else {
     jumlah.disabled = false;
   }
-
   hitungTotal();
-}
-
-function getValue(id) {
-  let el = document.getElementById(id);
-  let value = el.value.replace(/\./g, ""); // hapus titik
-  return parseInt(value) || 0;
 }
 
 function hitungTotal() {
   let total = 0;
-
-  document.querySelectorAll("#pengeluaranList .row").forEach((row) => {
+  document.querySelectorAll("#pengeluaranList .pengeluaran-item").forEach((row) => {
     const select = row.querySelector("select");
-    const jumlah = row.querySelector(".jumlah");
-    const harga = row.querySelector(".harga");
-
-    const type = select.options[select.selectedIndex].dataset.type;
-
-    const j = parseInt(jumlah.value) || 0;
-    let h = parseInt(harga.value.replace(/\./g, "")) || 0;
-
-    let subtotal = 0;
+    const hargaInput = row.querySelector(".harga");
+    
+    if (!hargaInput) return;
+    let h = parseInt(hargaInput.value.replace(/\./g, "")) || 0;
+    const type = select?.options[select.selectedIndex]?.dataset.type;
 
     if (type === "nonpcs") {
-      subtotal = h; // langsung harga
+      total += h;
     } else {
-      subtotal = h;
+      total += h;
     }
-
-    total += subtotal;
   });
-
   document.getElementById("totalPengeluaran").innerText = format(total);
 }
 
@@ -124,34 +134,28 @@ function getPengeluaranText() {
   let text = "";
   let total = 0;
 
-  document.querySelectorAll("#pengeluaranList .row").forEach((row) => {
+  document.querySelectorAll("#pengeluaranList .pengeluaran-item").forEach((row) => {
     const select = row.querySelector("select");
-    const custom = row.querySelector(".custom").value;
+    const custom = row.querySelector(".custom")?.value || "";
     const jumlah = row.querySelector(".jumlah");
     const harga = row.querySelector(".harga");
 
-    const type = select.options[select.selectedIndex].dataset.type;
-
-    const j = parseInt(jumlah.value) || 0;
+    if (!harga) return;
+    const type = select?.options[select.selectedIndex]?.dataset.type;
+    const j = parseInt(jumlah?.value) || 0;
     let h = parseInt(harga.value.replace(/\./g, "")) || 0;
 
-    const jenis = select.value === "Lain-lain" && custom ? custom : select.value;
-
-    let subtotal = 0;
+    let nama = select.value === "Lain-lain" && custom ? custom : select.value;
 
     if (type === "nonpcs") {
-      subtotal = h;
+      if (h > 0) {
+        total += h;
+        text += ` ${nama} ${format(h)}\n`;
+      }
     } else {
-      subtotal = h;
-    }
-
-    if (subtotal > 0) {
-      total += subtotal;
-
-      if (type === "nonpcs") {
-        text += ` ${jenis} ${format(h)}\n`;
-      } else {
-        text += ` ${jenis} ${j} pcs ${format(h)}\n`;
+      if (h > 0) {
+        total += h;
+        text += ` ${nama} ${j} pcs ${format(h)}\n`;
       }
     }
   });
@@ -159,10 +163,9 @@ function getPengeluaranText() {
   return { text, total };
 }
 
+// ================= GENERATE LAPORAN =================
 function generate() {
-  console.log(new Date());
   let pengeluaranData = getPengeluaranText();
-  // ambil data lama
   let totalSalesLama = getValue("totalSalesLama");
   let totalCULama = getValue("totalCULama");
   let today = new Date();
@@ -170,22 +173,15 @@ function generate() {
   let bulan = today.getMonth() + 1;
   let tahun = today.getFullYear();
 
-  // ambil data hari ini
   let salesHariIni = getValue("salesHarian");
   let cuHariIni = getValue("cuHarian");
 
-  // hitung total baru
   let totalSalesBaru = totalSalesLama + salesHariIni;
   let totalCUBaru = totalCULama + cuHariIni;
-
-  // hitung rata-rata
   let avgOmset = Math.round(totalSalesBaru / tanggal);
   let avgCU = (totalCUBaru / tanggal).toFixed(2);
-
-  // avg harian
   let avgHarian = Math.round(salesHariIni / (cuHariIni || 1));
 
-  // hitung semua
   let shopeefood = getValue("sf1") + getValue("sf2");
   let gofood = getValue("gf1") + getValue("gf2");
   let grab = getValue("gr1") + getValue("gr2");
@@ -193,7 +189,16 @@ function generate() {
   let qpon = getValue("qpon1") + getValue("qpon2");
   let tiktok = getValue("Tt1") + getValue("Tt2");
 
-  // template
+  let timBertugas = getActiveKaryawan();
+  let timText = "";
+  if (timBertugas.length === 0) {
+    timText = "Tidak ada tim yang bertugas";
+  } else {
+    timBertugas.forEach((nama, idx) => {
+      timText += `${idx + 1}. ${nama}\n`;
+    });
+  }
+
   let laporan = `
 _*🪽🐣TUTUP KASIR S Parman🐥🪽*_
 
@@ -224,8 +229,6 @@ ______________________
 - Extra Gangnam : 8
 ______________________
 *E-commerce :*
-*Dana:*
-*Transfer bank :*
 *Go-Food : ${format(gofood)}*
 *Grab : ${format(grab)}*
 *Qris: ${format(qris)}*
@@ -235,39 +238,131 @@ ______________________
 _______________________
 
 *_Pengeluaran_ :*
-${pengeluaranData.text}pcs
+${pengeluaranData.text || "- Tidak ada pengeluaran -"}
 *Total: ${format(pengeluaranData.total)}*
 _______________________
 *Ayam Waste*
 *CB: 0*
 *CK: 0*
 ________________________
-*Le mineral*
-*Terjual : *
-
-*Teh pucuk*
-*Terjual : * 
-
-*Cuaca*
-*pagi : Cerah*
-*siang : cerah*
-*sore : cerah*
-*malam : Hujan*
 
 tim yang bertugas
-1. esa
-2. Fikri
-4. Rifki
-5. Gata
-6. iqbal
+${timText}
 `;
 
   document.getElementById("result").value = laporan;
 }
 
-function copyText() {
-  let text = document.getElementById("result");
-  text.select();
-  document.execCommand("copy");
-  alert("Sudah di copy!");
+// ================= COPY LAPORAN (ENHANCED FOR MOBILE) =================
+async function copyText() {
+  const textarea = document.getElementById("result");
+  const laporanText = textarea.value;
+  
+  if (!laporanText || laporanText.trim() === "") {
+    showToast("⚠️ Tidak ada laporan untuk di copy!", "warning");
+    return;
+  }
+  
+  // Method modern pakai Clipboard API
+  if (navigator.clipboard && window.isSecureContext) {
+    try {
+      await navigator.clipboard.writeText(laporanText);
+      showToast("✅ Laporan berhasil disalin ke clipboard!", "success");
+      
+      // Beri efek visual pada textarea
+      textarea.style.backgroundColor = "#e6f7e6";
+      setTimeout(() => {
+        textarea.style.backgroundColor = "#fefce8";
+      }, 500);
+    } catch (err) {
+      console.error("Clipboard failed:", err);
+      fallbackCopy(textarea);
+    }
+  } else {
+    // Fallback untuk browser lama
+    fallbackCopy(textarea);
+  }
 }
+
+function fallbackCopy(textarea) {
+  textarea.select();
+  textarea.setSelectionRange(0, 99999); // Untuk mobile
+  
+  try {
+    const success = document.execCommand("copy");
+    if (success) {
+      showToast("✅ Laporan disalin (mode fallback)!", "success");
+    } else {
+      showToast("❌ Gagal menyalin, silakan copy manual", "error");
+    }
+  } catch (err) {
+    showToast("❌ Gagal menyalin: " + err.message, "error");
+  }
+  
+  // Deselect teks
+  textarea.blur();
+}
+
+// Toast notification yang cantik untuk mobile
+function showToast(message, type = "success") {
+  // Hapus toast lama jika ada
+  const existingToast = document.querySelector(".toast-notification");
+  if (existingToast) existingToast.remove();
+  
+  const toast = document.createElement("div");
+  toast.className = `toast-notification toast-${type}`;
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: ${type === "success" ? "#10b981" : type === "warning" ? "#f59e0b" : "#ef4444"};
+    color: white;
+    padding: 12px 20px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    white-space: nowrap;
+    max-width: 90%;
+    white-space: normal;
+    text-align: center;
+    font-family: system-ui, -apple-system, sans-serif;
+    pointer-events: none;
+    animation: slideUp 0.3s ease;
+  `;
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transition = "opacity 0.3s";
+    setTimeout(() => toast.remove(), 300);
+  }, 2500);
+}
+
+// Tambahkan CSS keyframes untuk toast
+const style = document.createElement("style");
+style.textContent = `
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+`;
+document.head.appendChild(style);
+// ================= INIT =================
+window.onload = () => {
+  renderKaryawanChecklist();
+  if (document.querySelectorAll("#pengeluaranList .pengeluaran-item").length === 0) {
+    tambahPengeluaran();
+  }
+  hitungTotal();
+};
