@@ -26,12 +26,14 @@ function renderKaryawanChecklist() {
   const container = document.getElementById("karyawanContainer");
   if (!container) return;
 
-  container.innerHTML = DAFTAR_KARYAWAN.map((nama, index) => `
+  container.innerHTML = DAFTAR_KARYAWAN.map(
+    (nama, index) => `
     <div class="karyawan-item">
       <input type="checkbox" id="karyawan_${index}" value="${nama}" checked>
       <label for="karyawan_${index}">${nama}</label>
     </div>
-  `).join("");
+  `,
+  ).join("");
 }
 
 function getActiveKaryawan() {
@@ -101,7 +103,7 @@ function toggleModeLainLain(select) {
   if (isLainLain) {
     lainlainGroup.style.display = "block";
     normalGroup.style.display = "none";
-    
+
     // Bersihkan input normal
     const jumlahInput = normalGroup.querySelector(".jumlah");
     const hargaInput = normalGroup.querySelector(".harga");
@@ -110,14 +112,14 @@ function toggleModeLainLain(select) {
   } else {
     lainlainGroup.style.display = "none";
     normalGroup.style.display = "block";
-    
+
     // Bersihkan input custom
     const customNama = lainlainGroup.querySelector(".custom-nama");
     const customHarga = lainlainGroup.querySelector(".custom-harga");
     if (customNama) customNama.value = "";
     if (customHarga) customHarga.value = "";
   }
-  
+
   // Untuk tipe nonpcs (Listrik, Air PDAM, Wifi) disable jumlah
   if (type === "nonpcs" && !isLainLain) {
     const jumlahInput = normalGroup.querySelector(".jumlah");
@@ -131,17 +133,17 @@ function toggleModeLainLain(select) {
       jumlahInput.disabled = false;
     }
   }
-  
+
   hitungTotal();
 }
 
 function hitungTotal() {
   let total = 0;
-  
+
   document.querySelectorAll("#pengeluaranList .pengeluaran-item").forEach((row) => {
     const select = row.querySelector("select");
     const isLainLain = select?.value.toLowerCase() === "lain-lain";
-    
+
     if (isLainLain) {
       // Mode Lain-lain: ambil dari custom-harga
       const customHarga = row.querySelector(".custom-harga");
@@ -158,7 +160,7 @@ function hitungTotal() {
       }
     }
   });
-  
+
   document.getElementById("totalPengeluaran").innerText = format(total);
 }
 
@@ -170,13 +172,13 @@ function getPengeluaranText() {
     const select = row.querySelector("select");
     const isLainLain = select?.value.toLowerCase() === "lain-lain";
     const type = select?.options[select.selectedIndex]?.dataset.type;
-    
+
     if (isLainLain) {
       // Mode Lain-lain: ambil custom nama dan harga
       const customNama = row.querySelector(".custom-nama")?.value.trim();
       const customHarga = row.querySelector(".custom-harga");
       let h = parseInt(customHarga?.value.replace(/\./g, "")) || 0;
-      
+
       if (h > 0 && customNama && customNama !== "") {
         total += h;
         text += ` ${customNama} ${format(h)}\n`;
@@ -189,13 +191,13 @@ function getPengeluaranText() {
       const nama = select?.value || "";
       const jumlah = row.querySelector(".normal-group .jumlah");
       const harga = row.querySelector(".normal-group .harga");
-      
+
       let j = parseInt(jumlah?.value) || 0;
       let h = parseInt(harga?.value.replace(/\./g, "")) || 0;
-      
+
       if (h === 0) return;
       total += h;
-      
+
       if (type === "nonpcs") {
         // Listrik, Air PDAM, Wifi: tanpa pcs
         text += ` ${nama} ${format(h)}\n`;
@@ -215,6 +217,7 @@ function getPengeluaranText() {
 
 // ================= GENERATE LAPORAN =================
 function generate() {
+  //Pengambilan data dari Input User
   let pengeluaranData = getPengeluaranText();
   let totalSalesLama = getValue("totalSalesLama");
   let totalCULama = getValue("totalCULama");
@@ -226,18 +229,26 @@ function generate() {
   let salesHariIni = getValue("salesHarian");
   let cuHariIni = getValue("cuHarian");
 
+  //Rumus AVG Omset dan Total CU
   let totalSalesBaru = totalSalesLama + salesHariIni;
   let totalCUBaru = totalCULama + cuHariIni;
   let avgOmset = Math.round(totalSalesBaru / tanggal);
   let avgCU = (totalCUBaru / tanggal).toFixed(2);
   let avgHarian = Math.round(salesHariIni / (cuHariIni || 1));
 
+  //Ambil nilai dari E-COMMERCE
   let shopeefood = getValue("sf1") + getValue("sf2");
   let gofood = getValue("gf1") + getValue("gf2");
   let grab = getValue("gr1") + getValue("gr2");
   let qris = getValue("qris1") + getValue("qris2");
   let qpon = getValue("qpon1") + getValue("qpon2");
   let tiktok = getValue("Tt1") + getValue("Tt2");
+
+  // Ambil nilai waste dan minuman
+  let wasteCB = getNumberValue("wasteCB");
+  let wasteCK = getNumberValue("wasteCK");
+  let leMineral = getNumberValue("leMineral");
+  let tehPucuk = getNumberValue("tehPucuk");
 
   let timBertugas = getActiveKaryawan();
   let timText = "";
@@ -292,9 +303,15 @@ ${pengeluaranData.text || "- Tidak ada pengeluaran -"}
 *Total: ${format(pengeluaranData.total)}*
 _______________________
 *Ayam Waste*
-*CB: 0*
-*CK: 0*
+*CB: ${wasteCB}*
+*CK: ${wasteCK}*
 ________________________
+
+*Le mineral*
+*Terjual : ${leMineral}*
+
+*Teh pucuk*
+*Terjual : ${tehPucuk}*
 
 tim yang bertugas
 ${timText}
@@ -303,16 +320,33 @@ ${timText}
   document.getElementById("result").value = laporan;
 }
 
+// ================= FORMAT ANGKA BIASA (TANPA RUPIAH) =================
+function formatNumberInput(el) {
+  let value = el.value.replace(/\D/g, "");
+  if (!value) {
+    el.value = "";
+    return;
+  }
+  el.value = new Intl.NumberFormat("id-ID").format(parseInt(value));
+}
+
+function getNumberValue(id) {
+  let el = document.getElementById(id);
+  if (!el) return 0;
+  let raw = el.value.replace(/\./g, "").replace(/\D/g, "");
+  return parseInt(raw) || 0;
+}
+
 // ================= COPY LAPORAN =================
 async function copyText() {
   const textarea = document.getElementById("result");
   const laporanText = textarea.value;
-  
+
   if (!laporanText || laporanText.trim() === "") {
     showToast("⚠️ Tidak ada laporan untuk di copy!", "warning");
     return;
   }
-  
+
   if (navigator.clipboard && window.isSecureContext) {
     try {
       await navigator.clipboard.writeText(laporanText);
@@ -333,7 +367,7 @@ async function copyText() {
 function fallbackCopy(textarea) {
   textarea.select();
   textarea.setSelectionRange(0, 99999);
-  
+
   try {
     const success = document.execCommand("copy");
     if (success) {
@@ -344,14 +378,14 @@ function fallbackCopy(textarea) {
   } catch (err) {
     showToast("❌ Gagal menyalin: " + err.message, "error");
   }
-  
+
   textarea.blur();
 }
 
 function showToast(message, type = "success") {
   const existingToast = document.querySelector(".toast-notification");
   if (existingToast) existingToast.remove();
-  
+
   const toast = document.createElement("div");
   toast.className = `toast-notification toast-${type}`;
   toast.textContent = message;
@@ -376,9 +410,9 @@ function showToast(message, type = "success") {
     pointer-events: none;
     animation: slideUp 0.3s ease;
   `;
-  
+
   document.body.appendChild(toast);
-  
+
   setTimeout(() => {
     toast.style.opacity = "0";
     toast.style.transition = "opacity 0.3s";

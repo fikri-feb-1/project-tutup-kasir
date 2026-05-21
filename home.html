@@ -102,6 +102,40 @@
         </div>
       </div>
 
+      <!-- AYAM WASTE & MINUMAN -->
+      <div class="card">
+        <h2>🍗 Ayam Waste & Minuman</h2>
+
+        <div class="waste-minuman-grid">
+          <!-- Ayam Waste -->
+          <div class="waste-group">
+            <label>🐔 Ayam Waste</label>
+            <div class="waste-row">
+              <div class="waste-item">
+                <label class="sub-label">CB</label>
+                <input type="text" id="wasteCB" placeholder="0" class="waste-input" oninput="formatNumberInput(this)" />
+              </div>
+              <div class="waste-item">
+                <label class="sub-label">CK</label>
+                <input type="text" id="wasteCK" placeholder="0" class="waste-input" oninput="formatNumberInput(this)" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Le Mineral -->
+          <div class="minuman-group">
+            <label>💧 Le Mineral Terjual</label>
+            <input type="text" id="leMineral" placeholder="0" class="rupiah" oninput="formatNumberInput(this)" />
+          </div>
+
+          <!-- Teh Pucuk -->
+          <div class="minuman-group">
+            <label>🍵 Teh Pucuk Terjual</label>
+            <input type="text" id="tehPucuk" placeholder="0" class="rupiah" oninput="formatNumberInput(this)" />
+          </div>
+        </div>
+      </div>
+
       <!-- ACTION BUTTONS -->
       <button class="generate-btn" onclick="generate()">📄 Generate Laporan</button>
 
