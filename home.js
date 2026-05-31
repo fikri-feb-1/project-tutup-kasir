@@ -20,7 +20,7 @@ function formatRupiahInput(el) {
 }
 
 // ================= DATA KARYAWAN =================
-const DAFTAR_KARYAWAN = ["Esa", "Fikri", "Rifki", "Gata", "Iqbal", "Aldi"];
+const DAFTAR_KARYAWAN = ["Esa", "Fikri", "Gata", "Iqbal", "Aldi"];
 
 function renderKaryawanChecklist() {
   const container = document.getElementById("karyawanContainer");
