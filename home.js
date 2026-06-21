@@ -268,11 +268,11 @@ _*🪽🐣TUTUP KASIR S Parman🐥🪽*_
 ______________________
  *Laporan Sales Bulanan*
 
-• Estimasi Sales Bulanan: 137.791.460
+• Estimasi Sales Bulanan: 144.648.157,5
 • Target Sales Harian: 3.862.142
 ______________________
 
-*• Target Sales Bulanan: Rp130.085.430,20*
+*• Target Sales Bulanan:  Rp140.085.430*
 *• Total Sales Bulanan : ${format(totalSalesBaru)}*
 *• Avg Omset : ${format(avgOmset)}*
 *• Total CU : ${format(totalCUBaru)}*
