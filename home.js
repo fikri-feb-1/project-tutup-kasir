@@ -272,7 +272,7 @@ ______________________
 • Target Sales Harian: 3.862.142
 ______________________
 
-*• Target Sales Bulanan:  Rp140.085.430*
+*• Target Sales Bulanan:  Rp142.178.820,5*
 *• Total Sales Bulanan : ${format(totalSalesBaru)}*
 *• Avg Omset : ${format(avgOmset)}*
 *• Total CU : ${format(totalCUBaru)}*
